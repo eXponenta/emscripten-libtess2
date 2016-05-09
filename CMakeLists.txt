@@ -4,7 +4,7 @@ cmake_minimum_required( VERSION 2.8.11 )
 
 set( LIBNAME tess2 )
 
-add_library( ${LIBNAME} SHARED
+add_library( ${LIBNAME}
 	Source/bucketalloc.c
 	Source/bucketalloc.h
 	Source/dict.c
