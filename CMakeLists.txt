@@ -7,7 +7,7 @@ include_directories(include)
 
 file(GLOB SOURCES src/*.c*)
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/public")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/build")
 add_executable(tess2 ${SOURCES})
 
 message(STATUS "Setting compilation target to WASM")
