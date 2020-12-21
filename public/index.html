@@ -1,0 +1,12 @@
+<!doctype html>
+<html>
+    
+  <script src="../build/tess2.js"></script>
+  <script>
+
+    createTess2Wasm().then(Module => {
+        window.tess = Module.tess;
+    });
+
+  </script>
+</html>
