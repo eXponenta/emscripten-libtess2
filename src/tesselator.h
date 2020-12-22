@@ -126,7 +126,6 @@ typedef int intPtr_t;
 struct TessResultMeta {
     int elementCount;
     int vertexCount;
-    int allocated;
     intPtr_t elementsPtr;
     intPtr_t verticesPtr;
     intPtr_t vertexIndicesPtr;

@@ -1,11 +1,11 @@
 <!doctype html>
 <html>
     
-  <script src="../build/tess2.js"></script>
+  <script src="../build/tess2.split.js"></script>
   <script>
 
     createTess2Wasm().then(Module => {
-        window.tess = Module.tess;
+        window.Tess = Module.Tess;
     });
 
   </script>
