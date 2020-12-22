@@ -5,21 +5,23 @@
 
 using namespace emscripten;
 
-TESStesselator* initTesselator() {
+intPtr_t initTesselator() {
 
     TESSalloc ma = {0};
     // realloc not provided, allow 256 extra vertices.
 	ma.extraVertices = 256; 
 
-    return tessNewTess(&ma);
+    return reinterpret_cast<intPtr_t> (tessNewTess(&ma));
 }
 
-void addContour (TESStesselator* tess, intPtr_t contour, int size) {
+void addContour (intPtr_t tessPtr, intPtr_t contour, int size) {
+    TESStesselator* tess = reinterpret_cast<TESStesselator*>(tessPtr);
     const float* ptr = reinterpret_cast<const float*>(contour);
 	tessAddContour(tess, 2, ptr, sizeof(float) * 2, size);
 }
 
-TessResultMeta runTesselator(TESStesselator* tess, TessOptions options) {
+TessResultMeta runTesselator(intPtr_t tessPtr, TessOptions options) {
+    TESStesselator* tess = reinterpret_cast<TESStesselator*>(tessPtr);
     TessResultMeta res = {0};
 
     if (!tessTesselate(tess, &options)) {
@@ -40,9 +42,10 @@ TessResultMeta runTesselator(TESStesselator* tess, TessOptions options) {
     return res;
 }
 
-void deleteTesselator(TESStesselator* tess) {
-    if (tess) {
-        tessDeleteTess(tess);
+void deleteTesselator(intPtr_t tessPtr) {
+    
+    if (tessPtr) {
+        tessDeleteTess(reinterpret_cast<TESStesselator*>(tessPtr));
     }
 }
 
