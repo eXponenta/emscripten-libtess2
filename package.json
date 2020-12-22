@@ -1,6 +1,6 @@
 {
   "name": "tess2-wasm",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Wasm port of LibTess2",
   "main": "./build/tess2.single.js",
   "module": "./build/tess2.single.js",
