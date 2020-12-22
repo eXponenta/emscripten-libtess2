@@ -37,7 +37,7 @@ Object.assign(Tess.prototype, {
             return;
 
         M["deleteTesselator"](this.ptr);
-        this.lastContours.forEach((e) => e.free && e.free());
+        this.lastContours.forEach( function(e) { e.free && e.free() });
         this.lastContours = [];
         this.ptr = 0;
 
