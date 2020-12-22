@@ -83,6 +83,14 @@ struct TESStesselator {
 	jmp_buf env;			/* place to jump to when memAllocs fail */
 };
 
+struct TessOptions {
+	int windingRule;
+	int elementType;
+	int polySize;
+	int vertexSize;
+	//const TESSreal* normal 
+};
+
 #ifdef __cplusplus
 };
 #endif

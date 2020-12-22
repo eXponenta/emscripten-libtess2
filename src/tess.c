@@ -472,6 +472,19 @@ TESStesselator* tessNewTess( TESSalloc* alloc )
 	if (alloc == NULL)
 		alloc = &defaulAlloc;
 	
+	// init default allocator if not present
+	if (alloc->memalloc == 0) {
+		alloc->memalloc = defaulAlloc.memalloc;
+	}
+
+	if (alloc->memrealloc == 0) {
+		alloc->memrealloc = defaulAlloc.memrealloc;
+	}
+
+	if (alloc->memfree == 0) {
+		alloc->memfree = defaulAlloc.memfree;
+	}
+	
 	/* Only initialize fields which can be changed by the api.  Other fields
 	* are initialized where they are used.
 	*/
@@ -851,8 +864,7 @@ void tessAddContour( TESStesselator *tess, int size, const void* vertices,
 	}
 }
 
-int tessTesselate( TESStesselator *tess, int windingRule, int elementType,
-				  int polySize, int vertexSize, const TESSreal* normal )
+int tessTesselate( TESStesselator *tess, TessOptions *options)
 {
 	TESSmesh *mesh;
 	int rc = 1;
@@ -872,19 +884,20 @@ int tessTesselate( TESStesselator *tess, int windingRule, int elementType,
 
 	tess->vertexIndexCounter = 0;
 	
+	/*
 	if (normal)
 	{
 		tess->normal[0] = normal[0];
 		tess->normal[1] = normal[1];
 		tess->normal[2] = normal[2];
-	}
+	}*/
 
-	tess->windingRule = windingRule;
+	tess->windingRule = options->windingRule;
 
-	if (vertexSize < 2)
-		vertexSize = 2;
-	if (vertexSize > 3)
-		vertexSize = 3;
+	if (options->vertexSize < 2)
+		options->vertexSize = 2;
+	if (options->vertexSize > 3)
+		options->vertexSize = 3;
 
 	if (setjmp(tess->env) != 0) { 
 		/* come back here if out of memory */
@@ -917,7 +930,7 @@ int tessTesselate( TESStesselator *tess, int windingRule, int elementType,
 	* except those which separate the interior from the exterior.
 	* Otherwise we tessellate all the regions marked "inside".
 	*/
-	if (elementType == TESS_BOUNDARY_CONTOURS) {
+	if (options->elementType == TESS_BOUNDARY_CONTOURS) {
 		rc = tessMeshSetWindingNumber( mesh, 1, TRUE );
 	} else {
 		rc = tessMeshTessellateInterior( mesh ); 
@@ -926,12 +939,12 @@ int tessTesselate( TESStesselator *tess, int windingRule, int elementType,
 
 	tessMeshCheckMesh( mesh );
 
-	if (elementType == TESS_BOUNDARY_CONTOURS) {
-		OutputContours( tess, mesh, vertexSize );     /* output contours */
+	if (options->elementType == TESS_BOUNDARY_CONTOURS) {
+		OutputContours( tess, mesh, options->vertexSize );     /* output contours */
 	}
 	else
 	{
-		OutputPolymesh( tess, mesh, elementType, polySize, vertexSize );     /* output polygons */
+		OutputPolymesh( tess, mesh, options->elementType, options->polySize, options->vertexSize );     /* output polygons */
 	}
 
 	tessMeshDeleteMesh( &tess->alloc, mesh );

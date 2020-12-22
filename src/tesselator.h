@@ -117,7 +117,20 @@ enum TessElementType
 typedef float TESSreal;
 typedef int TESSindex;
 typedef struct TESStesselator TESStesselator;
+typedef struct TessOptions TessOptions;
+
 typedef struct TESSalloc TESSalloc;
+
+typedef int intPtr_t;
+
+struct TessResultMeta {
+    int elementCount;
+    int vertexCount;
+    int allocated;
+    intPtr_t elementsPtr;
+    intPtr_t verticesPtr;
+    intPtr_t vertexIndicesPtr;
+};
 
 #define TESS_UNDEF (~(TESSindex)0)
 
@@ -182,7 +195,7 @@ void tessAddContour( TESStesselator *tess, int size, const void* pointer, int st
 //   normal - defines the normal of the input contours, of null the normal is calculated automatically.
 // Returns:
 //   1 if succeed, 0 if failed.
-int tessTesselate( TESStesselator *tess, int windingRule, int elementType, int polySize, int vertexSize, const TESSreal* normal );
+int tessTesselate( TESStesselator *tess, TessOptions *options);
 
 // tessGetVertexCount() - Returns number of vertices in the tesselated output.
 int tessGetVertexCount( TESStesselator *tess );
