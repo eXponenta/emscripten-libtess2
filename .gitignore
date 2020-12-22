@@ -10,3 +10,7 @@ cmake_install.cmake
 .ninja_log
 
 build.ninja
+
+Example/
+
+Contrib/
