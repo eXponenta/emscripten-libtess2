@@ -1,3 +1,35 @@
+tess2-wasm
+==========
+Port of Libtess2 to wasm
+
+__How to build__:
+
+* Install `emcc`
+* Install `cmake`
+* Install `Ninja` (for other build tools edit configuarion script)
+* Run `npm run release`
+
+__How to use__:
+
+Spawn a wrapped to wasm Tess class
+```
+createTess2Wasm().then({Tess} => {
+    const tess = new Tess();
+    tess.addContours([0,0, 0,1, 1,1, 1, 0]);
+    const result = tess.tesselate({
+        windingRule: 0, // ODD,
+        elementType: 0, // polygon,
+        polySize: 3,
+        vertexSize: 2
+    });
+    tess.dispose();
+});
+
+```
+_NOTE!_ Because this is WASM, need call a `Tess::dispose` to avoid leaks;
+
+..
+
 Libtess2
 ========
 Version 1.0.1

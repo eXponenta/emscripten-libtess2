@@ -1,0 +1,31 @@
+{
+  "name": "tess2-wasm",
+  "version": "1.0.2",
+  "description": "Wasm port of LibTess2",
+  "main": "./build/tess2.single.js",
+  "module": "./build/tess2.single.js",
+  "types": "./types/tess2.wasm.d.ts",
+  "scripts": {
+    "ninja:clear": "ninja -t clean",
+    "cmake:ninja": "emcmake cmake -G Ninja",
+    "build": "cmake --build .",
+    "release": "npm run ninja:clear && npm run cmake:ninja && npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eXponenta/emscripten-libtess2.git"
+  },
+  "keywords": [
+    "tess2",
+    "wasm",
+    "libtess2",
+    "c++",
+    "emscripten"
+  ],
+  "author": "eXponenta",
+  "license": "SEE LICENSE IN LICENSE.txt",
+  "bugs": {
+    "url": "https://github.com/eXponenta/emscripten-libtess2/issues"
+  },
+  "homepage": "https://github.com/eXponenta/emscripten-libtess2#readme"
+}
