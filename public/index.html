@@ -6,6 +6,7 @@
 
     createTess2Wasm().then(Module => {
         window.Tess = Module.Tess;
+        window.Module = Module;
     });
 
   </script>

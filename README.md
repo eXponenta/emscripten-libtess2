@@ -28,6 +28,11 @@ createTess2Wasm().then({Tess} => {
 ```
 _NOTE!_ Because this is WASM, need call a `Tess::dispose` to avoid leaks;
 
+
+__SIMD__
+
+Current implementation not use SIMD instruction, package include SIMD what emitted by LLVM `-msimd128` instruction. SIMD version slower and bigges that no-simd bundle in regular tests.
+
 ..
 
 Libtess2

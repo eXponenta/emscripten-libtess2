@@ -11,14 +11,14 @@ export const enum WINDONG_RULE
 	TESS_WINDING_POSITIVE,
 	TESS_WINDING_NEGATIVE,
 	TESS_WINDING_ABS_GEQ_TWO,
-};
+}
 
 export const enum ELEMENT_TYPE
 {
 	TESS_POLYGONS,
 	TESS_CONNECTED_POLYGONS,
 	TESS_BOUNDARY_CONTOURS,
-};
+}
 export interface ITessOptions {
 	windingRule: WINDONG_RULE;
 	elementType: ELEMENT_TYPE;
@@ -29,7 +29,7 @@ export interface ITessOptions {
 export interface ITess {
 	new(): ITess;
 	addContours(contours: ArrayLike<number> | ArrayLike<ArrayLike<number>>): void;
-	tesselate(options?: ITessOptions): IWasmResult | null;
+	tesselate(option?: ITessOptions): IWasmResult | null;
 	dispose(): void;
 }
 

@@ -1,4 +1,5 @@
 // this is packages that will emmit to compilled code
+var M = Module;
 
 function _bufferView (ptr, size, typeCtrl) {
     if (!size || size < 0) throw 'Size should be a greater 0';
@@ -6,42 +7,42 @@ function _bufferView (ptr, size, typeCtrl) {
 
     typeCtrl = typeCtrl || Uint8Array;
 
-    var view = new typeCtrl(Module.HEAP8.buffer, ptr, size);
+    var view = new typeCtrl(M["HEAP8"]["buffer"], ptr, size);
     view.ptr = ptr;
     view.free = function() {
-        Module._free(ptr);
+        M["_free"](ptr);
     };
     return view;
 }
 
 function _bufferMalloc(size, typeCtrl) {        
-    var ptr = Module._malloc(size * typeCtrl.BYTES_PER_ELEMENT);
+    var ptr = M["_malloc"](size * typeCtrl.BYTES_PER_ELEMENT);
     
     if(!ptr) throw 'Can\'t allocate a ' + size;
     
     return _bufferView(ptr, size, typeCtrl);
 };
 
-var Tess = Module["Tess"] = function () {
-    // ptr to tess module
-    this.ptr = Module.initTesselator();
+var Tess = M["Tess"] = function () {
+    // ptr to tess M
+    this.ptr = M["initTesselator"]();
     this.lastContours = [];
 
     if (!this.ptr) throw "Unknown error, tesselator wasn't init!";
 };
 
 Object.assign(Tess.prototype, {
-    dispose: function() {
+    "dispose": function() {
         if (!this.ptr) 
             return;
 
-        Module.deleteTesselator(this.ptr);
+        M["deleteTesselator"](this.ptr);
         this.lastContours.forEach((e) => e.free && e.free());
         this.lastContours = [];
         this.ptr = 0;
 
     },
-    addContour: function(contours) {
+    "addContours": function(contours) {
         if (!this.ptr) {
             throw 'Tessealtor wasn\'t be inited!';
         }
@@ -57,31 +58,43 @@ Object.assign(Tess.prototype, {
 
             buff.set(data, 0);
             cBuff.push(buff);
-            Module.addContour(this.ptr, buff.ptr, data.length / 2);
+            M["addContour"](this.ptr, buff.ptr, data.length / 2);
         }
     },
 
-    tesselate: function (options) {        
+    "tesselate": function (options) {        
         if (this.lastContours.length === 0)
-            throw 'Сontours data is required!';
+            throw 'Contours data is required!';
 
-        options = Object.assign(options || {}, {
-            windingRule: 0, elementType: 0, polySize: 3, vertexSize: 2 
-        });
+        options = Object.assign({
+            "windingRule": 0, 
+            "elementType": 0, 
+            "polySize": 3, 
+            "vertexSize": 2,
+            "fillVertexIndices": false 
+        }, options || {});
 
-        var result = Module.runTesselator(this.ptr, options);
+        var result = M["runTesselator"](this.ptr, options);
 
-        if (result.elementCount === 0) {
+        if (result["elementCount"] === 0) {
             return null;
         }
 
         var bv = _bufferView;
-        result.vertices = bv(result.verticesPtr, result.vertexCount * options.vertexSize, Float32Array);
-        result.elements = bv(result.elementsPtr, result.elementCount * options.polySize, Uint32Array);
+        result["vertices"] = bv(
+            result["verticesPtr"], 
+            result["vertexCount"] * options["vertexSize"], Float32Array);
+
+        result["elements"] = bv(
+            result["elementsPtr"], 
+            result["elementCount"] * options["polySize"], Uint32Array);
         
-        if (options.fillVertexIndices) {
-            result.vertexIndices = bv(result.vertexIndicesPtr, result.vertexCount, Uint32Array);
+        if (options["fillVertexIndices"]) {
+            result["vertexIndices"] = bv(
+                result["vertexIndicesPtr"], 
+                result["vertexCount"], Uint32Array);
         }
+
         return result;
     }
 });
