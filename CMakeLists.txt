@@ -18,6 +18,7 @@ message(STATUS "Setting compilation target to WASM")
 
 set(LIKN_ARGS "-s WASM=1 --bind \
     -s MODULARIZE=1 \
+    -s ENVIRONMENT='web' \
     -s EXPORT_NAME=createTess2Wasm \
     -s ALLOW_MEMORY_GROWTH=1 \ 
     --pre-js js/pre.js \

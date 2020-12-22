@@ -1,6 +1,6 @@
 export interface IWasmResult {
 	elements: Uint32Array & {free: () => void};
-	elementsCount: number;
+	elementCount: number;
 	vertexCount: number;
 	vertices: Float32Array & {free: () => void};
 }
@@ -37,4 +37,4 @@ export interface IModule {
 	Tess: ITess;
 }
 
-export function createTess2Wasm(): Promise<IModule>;
+export default function createTess2Wasm(): Promise<IModule>;
