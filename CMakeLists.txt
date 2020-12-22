@@ -16,37 +16,18 @@ add_executable(tess2.split.simd ${SOURCES})
 
 message(STATUS "Setting compilation target to WASM")
 
-set_target_properties(tess2.single PROPERTIES LINK_FLAGS "-s WASM=1 --bind \
+set(LIKN_ARGS "-s WASM=1 --bind \
     -s MODULARIZE=1 \
     -s EXPORT_NAME=createTess2Wasm \
-    -s SINGLE_FILE=1 \
+    -s ALLOW_MEMORY_GROWTH=1 \ 
     --pre-js js/pre.js \
     -O3 -g0 \
-    --closure 1")
+    --closure 1" )
 
-set_target_properties(tess2.split PROPERTIES LINK_FLAGS "-s WASM=1 --bind \
-    -s MODULARIZE=1 \
-    -s EXPORT_NAME=createTess2Wasm \
-    -s SINGLE_FILE=0 \
-    --pre-js js/pre.js \
-    -O3 -g0 \
-    --closure 1")
+set_target_properties(tess2.single PROPERTIES LINK_FLAGS "${LIKN_ARGS} -s SINGLE_FILE=1 ")
 
-set_target_properties(tess2.single.simd PROPERTIES LINK_FLAGS "-s WASM=1 --bind \
-    -s MODULARIZE=1 \
-    -s EXPORT_NAME=createTess2Wasm \
-    -s SINGLE_FILE=1 \
-    --pre-js js/pre.js \
-    -msimd128
-    -O3 -g0 \
-    --closure 1")
+set_target_properties(tess2.split PROPERTIES LINK_FLAGS "${LIKN_ARGS} -s SINGLE_FILE=0 ")
 
-set_target_properties(tess2.split.simd PROPERTIES LINK_FLAGS "-s WASM=1 --bind \
-    -s MODULARIZE=1 \
-    -s EXPORT_NAME=createTess2Wasm \
-    -s SINGLE_FILE=0 \
-    --pre-js js/pre.js \
-    -msimd128
-    -O3 -g0 \
-    --closure 1")
+set_target_properties(tess2.single.simd PROPERTIES LINK_FLAGS "${LIKN_ARGS} -s SINGLE_FILE=1 -msimd128")
 
+set_target_properties(tess2.split.simd PROPERTIES LINK_FLAGS "${LIKN_ARGS} -s SINGLE_FILE=0 -msimd128")
