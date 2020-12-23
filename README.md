@@ -28,6 +28,11 @@ createTess2Wasm().then({Tess} => {
 ```
 _NOTE!_ Because this is WASM, need call a `Tess::dispose` to avoid leaks;
 
+__COMPARASION__:
+Simle сomparison: `Earcut`, `Tess-TS`, `Tess-WASM`
+
+https://www.pixiplayground.com/#/edit/komaAjZ74MSHEKO9T3_5z
+
 
 __SIMD__
 
