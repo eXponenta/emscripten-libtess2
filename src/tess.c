@@ -864,7 +864,8 @@ void tessAddContour( TESStesselator *tess, int size, const void* vertices,
 	}
 }
 
-int tessTesselate( TESStesselator *tess, TessOptions *options)
+int tessTesselate( TESStesselator *tess, int windingRule, int elementType,
+				  int polySize, int vertexSize, const TESSreal* normal )
 {
 	TESSmesh *mesh;
 	int rc = 1;
@@ -884,20 +885,19 @@ int tessTesselate( TESStesselator *tess, TessOptions *options)
 
 	tess->vertexIndexCounter = 0;
 	
-	/*
 	if (normal)
 	{
 		tess->normal[0] = normal[0];
 		tess->normal[1] = normal[1];
 		tess->normal[2] = normal[2];
-	}*/
+	}
 
-	tess->windingRule = options->windingRule;
+	tess->windingRule = windingRule;
 
-	if (options->vertexSize < 2)
-		options->vertexSize = 2;
-	if (options->vertexSize > 3)
-		options->vertexSize = 3;
+	if (vertexSize < 2)
+		vertexSize = 2;
+	if (vertexSize > 3)
+		vertexSize = 3;
 
 	if (setjmp(tess->env) != 0) { 
 		/* come back here if out of memory */
@@ -930,7 +930,7 @@ int tessTesselate( TESStesselator *tess, TessOptions *options)
 	* except those which separate the interior from the exterior.
 	* Otherwise we tessellate all the regions marked "inside".
 	*/
-	if (options->elementType == TESS_BOUNDARY_CONTOURS) {
+	if (elementType == TESS_BOUNDARY_CONTOURS) {
 		rc = tessMeshSetWindingNumber( mesh, 1, TRUE );
 	} else {
 		rc = tessMeshTessellateInterior( mesh ); 
@@ -939,12 +939,12 @@ int tessTesselate( TESStesselator *tess, TessOptions *options)
 
 	tessMeshCheckMesh( mesh );
 
-	if (options->elementType == TESS_BOUNDARY_CONTOURS) {
-		OutputContours( tess, mesh, options->vertexSize );     /* output contours */
+	if (elementType == TESS_BOUNDARY_CONTOURS) {
+		OutputContours( tess, mesh, vertexSize );     /* output contours */
 	}
 	else
 	{
-		OutputPolymesh( tess, mesh, options->elementType, options->polySize, options->vertexSize );     /* output polygons */
+		OutputPolymesh( tess, mesh, elementType, polySize, vertexSize );     /* output polygons */
 	}
 
 	tessMeshDeleteMesh( &tess->alloc, mesh );

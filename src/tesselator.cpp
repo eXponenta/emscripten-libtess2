@@ -24,7 +24,11 @@ TessResultMeta runTesselator(intPtr_t tessPtr, TessOptions options) {
     TESStesselator* tess = reinterpret_cast<TESStesselator*>(tessPtr);
     TessResultMeta res = {0};
 
-    if (!tessTesselate(tess, &options)) {
+    if (!tessTesselate(tess, 
+        options.windingRule, 
+        options.elementType,
+		options.polySize, 
+        options.vertexSize, 0)) {
         return res;
     }
     
