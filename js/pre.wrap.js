@@ -1,5 +1,29 @@
 // this is packages that will emmit to compilled code
 var M = Module;
+var NN = 'number';
+
+var initTesselator, 
+    deleteTesselator, 
+    addContour,
+    runTesselator,
+    getVertexCount,
+    getVertices,
+    getElementCount,
+    getElements,
+    getVertexIndices;
+
+function _wrap () {
+    var _w = M['cwrap'];
+    initTesselator = _w('tessNewTess', NN, [NN]);
+    deleteTesselator = _w('tessDeleteTess', null, [NN]);
+    addContour = _w('tessAddContour', NN, [NN, NN, NN, NN, NN]);
+    runTesselator = _w('tessTesselate', NN, [NN, NN, NN, NN, NN, NN]);
+    getVertexCount = _w('tessGetVertexCount', NN, [NN]);
+    getVertices = _w('tessGetVertices', NN, [NN]);
+    getElementCount = _w('tessGetElementCount', NN, [NN]);
+    getElements = _w('tessGetElements', NN, [NN]);
+    getVertexIndices = _w('tessGetVertexIndices', NN, [NN]);
+}
 
 function _bufferView (ptr, size, typeCtrl) {
     if (!size || size < 0) throw 'Size should be a greater 0';
@@ -24,8 +48,11 @@ function _bufferMalloc(size, typeCtrl) {
 };
 
 var Tess = M["Tess"] = function () {
+    if(!initTesselator) {
+        _wrap();
+    }
     // ptr to tess M
-    this.ptr = M["initTesselator"]();
+    this.ptr = initTesselator(0);
     this.lastContours = [];
 
     if (!this.ptr) throw "Unknown error, tesselator wasn't init!";
@@ -36,17 +63,18 @@ Object.assign(Tess.prototype, {
         if (!this.ptr) 
             return;
 
-        M["deleteTesselator"](this.ptr);
+        deleteTesselator(this.ptr);
         this.lastContours.forEach( function(e) { e.free && e.free() });
         this.lastContours = [];
         this.ptr = 0;
 
     },
-    "addContours": function(contours) {
+    "addContours": function(contours, size) {
         if (!this.ptr) {
             throw 'Tessealtor wasn\'t be inited!';
         }
 
+        size = size || 2;
         var cBuff = this.lastContours = [];
         var malloc = _bufferMalloc;
 
@@ -58,7 +86,12 @@ Object.assign(Tess.prototype, {
 
             buff.set(data, 0);
             cBuff.push(buff);
-            M["addContour"](this.ptr, buff.ptr, data.length / 2);
+            addContour(
+                this.ptr, 
+                size, 
+                buff.ptr, 
+                size * Float32Array.BYTES_PER_ELEMENT, 
+                data.length / size);
         }
     },
 
@@ -74,25 +107,38 @@ Object.assign(Tess.prototype, {
             "fillVertexIndices": false 
         }, options || {});
 
-        var result = M["runTesselator"](this.ptr, options);
+        var status = runTesselator(this.ptr,
+            options["windingRule"] | 0 || 0,
+            options["elementType"] | 0 || 0,
+            options["polySize"] | 0 || 3,
+            options["vertexSize"] | 0 || 2,
+            0 // normal not allowed
+        );
 
-        if (result["elementCount"] === 0) {
+        if (!status) {
             return null;
         }
 
+        var vc = getVertexCount(this.ptr);
+        var ec = getElementCount(this.ptr); 
         var bv = _bufferView;
+
+        var result = {
+            "elementCount": ec, "vertexCount": vc 
+        };
+
         result["vertices"] = bv(
-            result["verticesPtr"], 
-            result["vertexCount"] * options["vertexSize"], Float32Array);
+            getVertices(this.ptr), 
+            vc * options["vertexSize"], Float32Array);
 
         result["elements"] = bv(
-            result["elementsPtr"], 
-            result["elementCount"] * options["polySize"], Uint32Array);
+            getElements(this.ptr), 
+            ec * options["polySize"], Uint32Array);
         
         if (options["fillVertexIndices"]) {
             result["vertexIndices"] = bv(
-                result["vertexIndicesPtr"], 
-                result["vertexCount"], Uint32Array);
+                getVertexIndices(this.ptr), 
+                vc, Uint32Array);
         }
 
         return result;
