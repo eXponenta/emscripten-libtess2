@@ -124,8 +124,13 @@ Object.assign(Tess.prototype, {
         var bv = _bufferView;
 
         var result = {
-            "elementCount": ec, "vertexCount": vc 
+            "elementCount": ec, 
+            "vertexCount": vc,
         };
+
+        if (!vc || !ec) {
+            return null;
+        }
 
         result["vertices"] = bv(
             getVertices(this.ptr), 
